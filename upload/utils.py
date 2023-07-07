@@ -24,9 +24,24 @@ def send_file(url: str, file_path: str):
         files = {'file': f}
         # Send the POST request to the server-side API endpoint
         response = requests.post(url, headers=headers, files=files)
+
+        print(response.text)
         # Convert the server-side response to JSON format
         json_response = response.json()
-        print(json_response)
+        
     
     # Return the server-side response
     return json_response
+
+URL = 'http://110.93.240.107:8080/uploadfile/'
+def get_diarization_results(file_path):
+    response_dict = send_file(url=URL,file_path=file_path)
+    print(response_dict)
+    # if response_dict['status']:
+    #     segments = response_dict['msg']
+    #     return segments
+    # else:
+    #     return response_dict['msg']
+    return {'asfas':'asfaf'}
+
+# a=get_diarization_results('/home/ali/Desktop/idrak_work/danish/upload/.web/public/backy.wav')

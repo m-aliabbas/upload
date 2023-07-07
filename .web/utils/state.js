@@ -3,6 +3,8 @@ import axios from "axios";
 import io from "socket.io-client";
 import JSON5 from "json5";
 import env from "env.json";
+import Cookies from "universal-cookie";
+
 
 // Endpoint URLs.
 const PINGURL = env.pingUrl
@@ -94,6 +96,18 @@ export const applyEvent = async (event, router, socket) => {
     return false;
   }
 
+  if (event.name == "_set_cookie") {
+    const cookies = new Cookies();
+    cookies.set(event.payload.key, event.payload.value);
+    localStorage.setItem(event.payload.key, event.payload.value);
+    return false;
+  }
+
+  if (event.name == "_set_local_storage") {
+    localStorage.setItem(event.payload.key, event.payload.value);
+    return false;
+  }
+
   if (event.name == "_alert") {
     alert(event.payload.message);
     return false;
@@ -166,10 +180,10 @@ export const processEvent = async (
   setResult({ ...result, processing: true });
 
   // Apply the next event in the queue.
-  const event = state.events[0];
+  const event = state.events.shift();
 
   // Set new events to avoid reprocessing the same event.
-  setState(state => ({ ...state, events: state.events.slice(1) }));
+  setState(state => ({ ...state, events: state.events }));
 
   // Process events with handlers via REST and all others via websockets.
   let eventSent = false;

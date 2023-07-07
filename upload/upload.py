@@ -3,16 +3,35 @@ import os
 from typing import List
 from .utils import *
 import reflex as rx
-URL = 'http://110.93.240.107:8080/'
+
+URL = 'http://110.93.240.107:8080/uploadfile/'
 def get_diarization_results(file_path):
     response_dict = send_file(url=URL,file_path=file_path)
     print(response_dict)
-    # if response_dict['status']:
-    #     segments = response_dict['msg']
-    #     return segments
-    # else:
-    #     return response_dict['msg']
-    return {'asfas':'asfaf'}
+    if response_dict['status']:
+        segments = response_dict['msg']
+        return segments
+    else:
+        return response_dict['msg']
+    
+def outside_function(input_dict):
+    print(input_dict)
+    return True
+
+
+class CallAnalytics:
+    def __init__(self) -> None:
+        self.data = []
+
+    def input_speaker_data(self,input_dict):
+        self.data.append(input_dict)
+
+    def print_data(self):
+        print('==================== Data we have ============================')
+        print(self.data)
+
+
+call_analytics = CallAnalytics()
 
 class State(rx.State):
     """The app state."""
@@ -37,7 +56,8 @@ class State(rx.State):
             with open(outfile, "wb") as file_object:
                 file_object.write(upload_data)
             speaker_response = get_diarization_results(outfile)
-            print(speaker_response)
+            call_analytics.input_speaker_data(speaker_response)
+            call_analytics.print_data()
 
         # Stop the upload.
         return State.stop_upload
